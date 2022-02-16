@@ -1,11 +1,14 @@
 """Generate Markov text from text files."""
 
+#from random module import choice function
 from random import choice
 
+# moved file path bc of control flow
 input_path = 'green-eggs.txt'
 
-def open_and_read_file(file_path):
-    """Take file path as string; return text as string.
+
+def open_and_read_file(file_path): # funtion opens the text file and reads it, returns the whole file vs. line by line
+    """Take file path as string; return text as string. 
 
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
@@ -15,10 +18,8 @@ def open_and_read_file(file_path):
 
     return contents
 
-# open_and_read_file(input_path)
 
-
-def make_chains(text_string):
+def make_chains(text_string): # defines the function that takes text_string as parameter
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -43,70 +44,58 @@ def make_chains(text_string):
         [None]
     """
 
-    chains = {}
+    chains = {} #create an empty dictionary
 
-    # your code goes here
-    input_text = open_and_read_file(input_path)
-
+    
+    input_text = open_and_read_file(input_path) #calls previous funtion and assigns to variable, in this
+    #case is the green eggs text file 
+    
+    #splits all words from input_text
     words = input_text.split()
 
-    # Loops over the words in the list of words, 
-    # making sure you can access the word at i, and i+1
-    # for i in range(len(words) - 2):
-
-    #     # make input_text[i], input_text[i + 1] a key
-    #     key_tuple = (words[i], words[i + 1])
-
-    #     # check if chains has this key, else return 0
-    #     chains.get(key_tuple, 0)
-
-    #     initial_list = [words[i + 2]]
-
-    #     chains[key_tuple] = initial_list
-
-    # #create an empty list
-    # values_list = []
-
-    # if key_tuple in chains:
-    #     # append word to the list
-    #     initial_list.append(words[i + 1])
-    #     chains[key_tuple] = values_list
-    # # else:
-    #     #initialize that list and put your word into it
-    #     chains[key_tuple] = values_list
-    #     values_list.append(words[i + 1])
-
-
-    # To set a stop point, append None to the end of our word list.
-
+    # append None to the end of our word list to prevent keyError
     words.append(None)
 
-    for i in range(len(words) - 2):
-        key = (words[i], words[i + 1])
-        value = words[i + 2]
 
-        if key not in chains:
-            chains[key] = []
+    for i in range(len(words) - 2): #for every element in the index up to the last 2
+        key_tuple = (words[i], words[i + 1]) # assign the tuple values to the index and index +1 in words(list)
+        value = words[i + 2] # the value of the key_tuple is assigned to words at index + 2
 
-        chains[key].append(value)
+        if key_tuple not in chains: #if the key_tuple is not already in the dictionary
+            chains[key_tuple] = [] #assign the key_tuple to empty list
 
-        # or we could replace the last three lines with:
-        #    chains.setdefault(key, []).append(value)
+        chains[key_tuple].append(value) #append the value to the chain dictionary
 
     return chains
 
 
-print(make_chains(input_path))
+# print(make_chains(input_path))
 
 
-def make_text(chains):
+def make_text(chains): #define function that makes new text out of the dictionary above
     """Return text from chains."""
-
-    words = []
 
     # your code goes here
 
+    # start with random choice to start link
+    start_key = choice(list((chains.keys())))
+    
+    words = [start_key[0], start_key[1]] # place-holding list for tuple index 0 and 1 in start_key(needs to be list to be updated) 
+    word = choice(chains[start_key]) # picking a random choice from the values list at the start_key
+    
+    # print(start_key.value())
+    # random_start = chains.keys()
+
+    while word is not None:
+        # iterate through all words until you reach the end
+        start_key = (start_key[1], word) #made new start_key tuple out of second word in start_key followed by random word 
+        words.append(word) #append random word to words as next second word 
+        word = choice(chains[start_key]) # picking a random choice from the values list at the start_key
+
+    # returns the list of words + ' ' between all the words
     return ' '.join(words)
+
+print(make_text(make_chains(input_path)))
 
 
 # Open the file and turn it into one long string
